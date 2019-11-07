@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class SerialMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
         int numValues = Integer.parseInt(args[0]);
         MinimumPairwiseDistance mpd = new SerialMinimumPairwiseDistance();
 

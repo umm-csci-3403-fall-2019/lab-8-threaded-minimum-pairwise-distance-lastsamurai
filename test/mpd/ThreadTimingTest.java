@@ -11,7 +11,7 @@ public class ThreadTimingTest {
     public static final int NUM_VALUES = 100000;
 
     @Test
-    public void testSortingTiming() {
+    public void testSortingTiming() throws InterruptedException {
         Random random = new Random();
         MinimumPairwiseDistance serialMPD = new SerialMinimumPairwiseDistance();
         int[] serialValues = new int[NUM_VALUES];

@@ -4,10 +4,9 @@ import java.util.Random;
 
 public class ThreadedMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         int numValues = Integer.parseInt(args[0]);
         MinimumPairwiseDistance mpd = new ThreadedMinimumPairwiseDistance();
-
         Random random = new Random();
         int[] values = new int[numValues];
         for (int i = 0; i < numValues; ++i) {

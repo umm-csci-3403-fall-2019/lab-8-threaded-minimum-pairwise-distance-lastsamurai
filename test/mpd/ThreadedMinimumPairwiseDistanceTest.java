@@ -16,28 +16,28 @@ public class ThreadedMinimumPairwiseDistanceTest {
     }
 
     @Test
-    public void testEmptyArray() {
+    public void testEmptyArray() throws InterruptedException{
         int[] values = new int[0];
         long minimum = mpd.minimumPairwiseDistance(values);
         assertEquals(Integer.MAX_VALUE, minimum);
     }
 
     @Test
-    public void testSmallArrayWithDuplicates() {
+    public void testSmallArrayWithDuplicates() throws InterruptedException{
         int[] values = new int[] { 3, 2, 0, 5, 8, 9, 6, 3, 2, 0 };
         long minimum = mpd.minimumPairwiseDistance(values);
         assertEquals(0, minimum);
     }
 
     @Test
-    public void testSmallSequence() {
+    public void testSmallSequence() throws InterruptedException{
         int[] values = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         long minimum = mpd.minimumPairwiseDistance(values);
         assertEquals(1, minimum);
     }
 
     @Test
-    public void testSmallRandomArray() {
+    public void testSmallRandomArray() throws InterruptedException{
         int[] values = new int[] { 742428, 320304, 479193, 412922, 567421,
                 442073, 425546, 393948, 505578, 660888 };
         long minimum = mpd.minimumPairwiseDistance(values);
@@ -45,7 +45,7 @@ public class ThreadedMinimumPairwiseDistanceTest {
     }
 
     @Test
-    public void testLargeSequence() {
+    public void testLargeSequence() throws InterruptedException{
         int[] values = new int[NUM_VALUES];
         for (int i = 0; i < NUM_VALUES; ++i) {
             values[i] = i;
