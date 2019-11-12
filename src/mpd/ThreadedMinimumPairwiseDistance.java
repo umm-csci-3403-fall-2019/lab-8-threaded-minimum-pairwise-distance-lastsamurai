@@ -1,9 +1,5 @@
 package mpd;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-import sun.awt.windows.ThemeReader;
-import sun.print.SunMinMaxPage;
-
 import java.lang.Thread;
 
 public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance {
@@ -18,22 +14,27 @@ public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance 
     @Override
     public long minimumPairwiseDistance(int[] values) throws InterruptedException {
 
+        // Variables
         Thread[] threads = new Thread[NUM_THREADS];
-
         int size = values.length / 2;
-
         MinimumResult result = new MinimumResult();
 
-        SectionThreading range1 = new SectionThreading(result, values, 0, size, 0, size);
-        SectionThreading range2 = new SectionThreading(result, values, size, size * 2, 0, size);
-        SectionThreading range3 = new SectionThreading(result, values, size, size * 2, 0, size);
-        SectionThreading range4 = new SectionThreading(result, values, size, size * 2, size, size * 2);
+        // Left Triangle Runnable call
+        NormalSectionThreading range1 = new NormalSectionThreading(result, values, 0, size);
+        // Middle Triangle Runnable call
+        InvertedSectionThreading range2 = new InvertedSectionThreading(result, values, size, size * 2);
+        // Right Triangle Runnable call
+        RightSectionThreading range3 = new RightSectionThreading(result, values, size, size * 2);
+        // Top Triangle Runnable call
+        NormalSectionThreading range4 = new NormalSectionThreading(result, values, size, size * 2);
 
+        // Creating all Threads
         threads[0] = new Thread(range1);
         threads[1] = new Thread(range2);
         threads[2] = new Thread(range3);
         threads[3] = new Thread(range4);
 
+        // Loops for starting threads and joining the threads
         for (int k = 0; k < NUM_THREADS; k++) {
             threads[k].start();
         }
@@ -46,57 +47,100 @@ public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance 
         return result.getResult();
     }
 
-    public class SectionThreading implements Runnable {
+    public class NormalSectionThreading implements Runnable {
 
         private MinimumResult result;
         private int begin;
         private int end;
-        private int i;
-        private int j;
         private int[] values;
 
-        public SectionThreading(MinimumResult result, int[] values, int begin, int i, int j, int end) {
+        public NormalSectionThreading(MinimumResult result, int[] values, int begin, int end) {
             this.result = result;
             this.values = values;
             this.begin = begin;
-            this.i = i;
-            this.j = j;
             this.end = end;
         }
+
         @Override
         public void run() {
-            long coombyya = Integer.MAX_VALUE;
-            for (int index = begin; index < i; ++index) {
-                for (int index2 = j; index2 < end; ++index2) {
-                    long diff = Math.abs(values[index] - values[index2]);
-                    if (diff < coombyya) {
-                        result.setResult(coombyya);
+            for (int i = begin; i < end ; ++i) {
+                for (int j = begin; j < i; ++j) {
+                    long diff = Math.abs(values[i] - values[j]); // checks distance between two integers
+                    if (diff < result.getResult()) { // compares the new distance to the one that we have saved
+                        result.setResult(diff); // if true, set the new distance as the result
                     }
                 }
             }
         }
     }
 
+    public class InvertedSectionThreading implements Runnable {
 
+        private MinimumResult result;
+        private int begin;
+        private int end;
+        private int[] values;
+
+        public InvertedSectionThreading(MinimumResult result, int[] values, int begin, int end) {
+            this.result = result;
+            this.values = values;
+            this.begin = begin;
+            this.end = end;
+        }
+
+        @Override
+        public void run() {
+            for (int j = 0; j < begin ; ++j) {
+                for (int i = begin; i <= j+begin; ++i) {
+                    long diff = Math.abs(values[j] - values[i]);
+                    if (diff < result.getResult()) {
+                        result.setResult(diff);
+                    }
+                }
+            }
+        }
+    }
+
+    public class RightSectionThreading implements Runnable {
+
+        private MinimumResult result;
+        private int begin;
+        private int end;
+        private int[] values;
+
+        public RightSectionThreading(MinimumResult result, int[] values, int begin, int end) {
+            this.result = result;
+            this.values = values;
+            this.begin = begin;
+            this.end = end;
+        }
+
+        @Override
+        public void run() {
+            for (int i = begin; i < end ; ++i) {
+                for (int j = 0; j+begin < i; ++j) {
+                    long diff = Math.abs(values[i] - values[j]);
+                    if (diff < result.getResult()) {
+                        result.setResult(diff);
+                    }
+                }
+            }
+        }
+    }
 
     public class MinimumResult {
 
-        private long result = 10000000;
-        private long prior;
+        // sets the first result as the largest value, base case
+        private long result = Integer.MAX_VALUE;
+
 
         public long getResult() {
             return result;
         }
 
-        public synchronized void setResult(long result) {
-            if (this.result == 10000000) {
-                this.result = result;
-
-            }
-            if (prior > result) {
-                this.prior = result;
-                this.result = result;
-
+        public synchronized void setResult(long newResult) {
+            if (result > newResult) { // if the old result is larger then the new, set old as the new
+                result = newResult;
             }
         }
     }

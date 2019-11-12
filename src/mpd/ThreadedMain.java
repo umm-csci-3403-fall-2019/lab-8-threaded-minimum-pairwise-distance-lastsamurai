@@ -12,7 +12,9 @@ public class ThreadedMain {
         for (int i = 0; i < numValues; ++i) {
             values[i] = random.nextInt();
         }
-        
+
+
+
         long result = mpd.minimumPairwiseDistance(values);
         System.out.println("The minimum distance was " + result);
     }
