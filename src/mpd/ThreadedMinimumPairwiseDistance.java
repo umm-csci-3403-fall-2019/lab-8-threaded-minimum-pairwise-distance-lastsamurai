@@ -2,6 +2,13 @@ package mpd;
 
 import java.lang.Thread;
 
+/**
+ * This class deals with all of the pairwise distance threading that occurs through multiple threads. it also contains
+ * 3 sub classes that assist with the running of different thread searches through a array of integers. Each subclass
+ * has a different way of utilizing the serach algorithm so that it returns the minimum distance between all of the
+ * integers in the array.
+ *
+ */
 public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance {
 
     private final int NUM_THREADS = 4;
@@ -47,6 +54,12 @@ public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance 
         return result.getResult();
     }
 
+    /**
+     * Normal Section Threading deals with the two basic runnable sections. One if the top and the other is the left
+     * most triangle. The constructor takes a minimum value that is shared among all of the threads, the list of values,
+     * and the intervals that it is searching between. Finally, the run method checks the distances between all of the
+     * values and Sets the result equal to the new smallest variable if it was smaller than the previous.
+     */
     public class NormalSectionThreading implements Runnable {
 
         private MinimumResult result;
@@ -74,6 +87,12 @@ public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance 
         }
     }
 
+    /**
+     * Inverted Section Threading deals with the middle most triangle. The constructor takes a minimum value that is
+     * shared among all of the threads, the list of values, and the intervals that it is searching between. Finally,
+     * the run method checks the distances between all of the values and Sets the result equal to the new smallest
+     * variable if it was smaller than the previous.
+     */
     public class InvertedSectionThreading implements Runnable {
 
         private MinimumResult result;
@@ -101,6 +120,12 @@ public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance 
         }
     }
 
+    /**
+     * Right Section Threading deals with the remaining triangle, the right one. The constructor takes a minimum value
+     * that is shared among all of the threads, the list of values, and the intervals that it is searching between.
+     * Finally, the run method checks the distances between all of the values and Sets the result equal to the new
+     * smallest variable if it was smaller than the previous.
+     */
     public class RightSectionThreading implements Runnable {
 
         private MinimumResult result;
@@ -128,6 +153,11 @@ public class ThreadedMinimumPairwiseDistance implements MinimumPairwiseDistance 
         }
     }
 
+    /**
+     * MinimumResult is a sub class that assists with the management of the final result of the smallest distance
+     * between all values. One can set the Result or get the Result. Otherwise, the result is the largest Integer value
+     * possible until changed.
+     */
     public class MinimumResult {
 
         // sets the first result as the largest value, base case
